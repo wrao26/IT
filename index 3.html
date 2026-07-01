@@ -1,0 +1,1215 @@
+<!DOCTYPE html>
+<html lang="pt-AO">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>NEXUS IT — Infraestrutura de Tecnologia para Empresas | Angola</title>
+<meta name="description" content="Infraestrutura IT, redes, cibersegurança e suporte técnico empresarial em Angola. Equipamentos, contratos de manutenção e diagnóstico técnico para organizações sérias.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+
+<style>
+/* ============================================================
+   NEXUS IT — DESIGN TOKENS
+   Palette: graphite-teal base, copper signal, cyan schematic
+   Type: Space Grotesk (display) / IBM Plex Sans (body) / IBM Plex Mono (data)
+   Signature: live "network topology" NOC panel in hero
+   ============================================================ */
+:root{
+  --bg:            #0C1214;
+  --bg-1:          #10191C;
+  --panel:         #131C20;
+  --panel-2:       #172226;
+  --line:          #223035;
+  --line-soft:     #1A2529;
+  --text:          #EAEEEE;
+  --text-dim:      #9FAFB3;
+  --text-mute:     #66787D;
+  --copper:        #D9893F;
+  --copper-soft:   #B9713080;
+  --cyan:          #4FB6C9;
+  --cyan-soft:     #4FB6C933;
+  --ok:            #6FBF8B;
+  --warn:          #E0B24D;
+
+  --font-display:  'Space Grotesk', sans-serif;
+  --font-body:     'IBM Plex Sans', sans-serif;
+  --font-mono:     'IBM Plex Mono', monospace;
+
+  --radius: 4px;
+  --container: 1240px;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:auto;}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--font-body);
+  font-size:16px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+img,svg{display:block;max-width:100%;}
+a{color:inherit;text-decoration:none;}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;}
+ul{list-style:none;}
+
+/* blueprint grid background */
+.grid-bg{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:
+    linear-gradient(var(--line-soft) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line-soft) 1px, transparent 1px);
+  background-size:64px 64px;
+  opacity:.35;
+  mask-image:radial-gradient(ellipse 90% 60% at 50% 0%, black 40%, transparent 90%);
+}
+
+.wrap{max-width:var(--container);margin:0 auto;padding:0 24px;position:relative;z-index:1;}
+section{position:relative;z-index:1;}
+
+.eyebrow{
+  font-family:var(--font-mono);
+  font-size:12px;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--copper);
+  display:flex;align-items:center;gap:10px;
+  margin-bottom:18px;
+}
+.eyebrow::before{content:'';width:18px;height:1px;background:var(--copper);}
+
+h1,h2,h3,h4{font-family:var(--font-display);font-weight:600;letter-spacing:-.01em;color:var(--text);}
+h2{font-size:clamp(28px,4vw,44px);line-height:1.1;}
+h3{font-size:20px;}
+p{color:var(--text-dim);}
+.mono{font-family:var(--font-mono);}
+
+.section-head{max-width:640px;margin-bottom:56px;}
+.section-head p{margin-top:14px;font-size:16px;}
+
+/* ---------- buttons ---------- */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:14px 26px;
+  font-family:var(--font-mono);
+  font-size:13px;letter-spacing:.05em;text-transform:uppercase;
+  border-radius:var(--radius);
+  transition:all .25s ease;
+  white-space:nowrap;
+}
+.btn-primary{background:var(--copper);color:#0C1214;font-weight:600;}
+.btn-primary:hover{background:#EFA05E;transform:translateY(-2px);}
+.btn-ghost{border:1px solid var(--line);color:var(--text);}
+.btn-ghost:hover{border-color:var(--cyan);color:var(--cyan);}
+.btn-block{width:100%;}
+
+/* ============================================================
+   HEADER / NAV
+   ============================================================ */
+header{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  background:rgba(12,18,20,.82);
+  backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line-soft);
+}
+.nav{display:flex;align-items:center;justify-content:space-between;height:76px;}
+.logo{font-family:var(--font-display);font-weight:700;font-size:19px;display:flex;align-items:center;gap:10px;}
+.logo .dot{width:8px;height:8px;background:var(--copper);border-radius:1px;box-shadow:0 0 12px var(--copper);}
+.logo span{color:var(--text-dim);font-weight:400;font-size:12px;font-family:var(--font-mono);margin-left:2px;}
+.nav-links{display:flex;gap:36px;font-size:14px;}
+.nav-links a{color:var(--text-dim);transition:color .2s;position:relative;}
+.nav-links a:hover{color:var(--text);}
+.nav-cta{display:flex;align-items:center;gap:14px;}
+.nav-toggle{display:none;flex-direction:column;gap:5px;width:26px;}
+.nav-toggle span{height:2px;background:var(--text);width:100%;}
+
+@media(max-width:920px){
+  .nav-links{
+    position:fixed;top:76px;left:0;right:0;bottom:0;
+    background:var(--bg-1);
+    flex-direction:column;padding:32px 24px;gap:0;
+    transform:translateX(100%);transition:transform .35s ease;
+    overflow-y:auto;
+  }
+  .nav-links.open{transform:translateX(0);}
+  .nav-links a{padding:16px 0;border-bottom:1px solid var(--line-soft);font-size:17px;}
+  .nav-cta .btn-ghost{display:none;}
+  .nav-toggle{display:flex;}
+}
+
+/* ============================================================
+   HERO
+   ============================================================ */
+.hero{
+  min-height:100svh;
+  display:flex;align-items:center;
+  padding:140px 0 80px;
+  position:relative;
+}
+.hero-grid{
+  display:grid;grid-template-columns:1.05fr .95fr;gap:60px;align-items:center;
+}
+.hero-status{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:var(--font-mono);font-size:12px;color:var(--ok);
+  border:1px solid var(--line);padding:6px 12px;border-radius:20px;
+  margin-bottom:28px;
+}
+.hero-status .pulse{width:6px;height:6px;background:var(--ok);border-radius:50%;box-shadow:0 0 8px var(--ok);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+
+.hero h1{font-size:clamp(38px,5.4vw,64px);line-height:1.06;}
+.hero h1 em{font-style:normal;color:var(--copper);}
+.hero p.lead{font-size:18px;margin-top:24px;max-width:520px;color:var(--text-dim);}
+.hero-cta{display:flex;gap:14px;margin-top:38px;flex-wrap:wrap;}
+.hero-meta{display:flex;gap:34px;margin-top:52px;padding-top:32px;border-top:1px solid var(--line-soft);}
+.hero-meta div span{display:block;font-family:var(--font-mono);font-size:26px;color:var(--text);font-weight:600;}
+.hero-meta div small{color:var(--text-mute);font-size:12px;letter-spacing:.05em;text-transform:uppercase;}
+
+/* --- signature: NOC topology panel --- */
+.noc-panel{
+  background:var(--panel);border:1px solid var(--line);border-radius:6px;
+  overflow:hidden;
+}
+.noc-head{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:14px 18px;border-bottom:1px solid var(--line-soft);
+  font-family:var(--font-mono);font-size:11px;color:var(--text-mute);letter-spacing:.05em;
+}
+.noc-head .live{color:var(--ok);display:flex;align-items:center;gap:6px;}
+.noc-head .live i{width:6px;height:6px;border-radius:50%;background:var(--ok);display:inline-block;animation:pulse 2s infinite;}
+.noc-body{padding:20px;}
+#topology{width:100%;height:auto;}
+.noc-log{
+  border-top:1px solid var(--line-soft);
+  padding:14px 18px;height:118px;overflow:hidden;position:relative;
+  font-family:var(--font-mono);font-size:11.5px;color:var(--text-mute);
+}
+.noc-log div{padding:3px 0;white-space:nowrap;}
+.noc-log .ok{color:var(--ok);}
+.noc-log .warn{color:var(--warn);}
+
+@media(max-width:920px){
+  .hero-grid{grid-template-columns:1fr;}
+  .hero{padding:120px 0 60px;}
+  .hero-meta{flex-wrap:wrap;row-gap:20px;}
+}
+
+/* ============================================================
+   TRUST STRIP
+   ============================================================ */
+.trust-strip{
+  border-top:1px solid var(--line-soft);border-bottom:1px solid var(--line-soft);
+  padding:22px 0;background:var(--bg-1);
+}
+.trust-strip .wrap{
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:18px;
+}
+.trust-strip p{font-family:var(--font-mono);font-size:12.5px;color:var(--text-mute);letter-spacing:.03em;}
+.trust-brands{display:flex;gap:34px;align-items:center;flex-wrap:wrap;opacity:.8;}
+.trust-brands span{font-family:var(--font-display);font-weight:600;font-size:15px;color:var(--text-dim);}
+
+/* ============================================================
+   SERVICES GRID
+   ============================================================ */
+.services{padding:120px 0;}
+.services-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:1px;
+  background:var(--line-soft);border:1px solid var(--line-soft);
+}
+.service-card{
+  background:var(--bg);padding:36px 30px;
+  transition:background .3s ease;
+  position:relative;
+}
+.service-card:hover{background:var(--panel);}
+.service-card .idx{font-family:var(--font-mono);font-size:11px;color:var(--copper);letter-spacing:.1em;}
+.service-card h3{margin:16px 0 10px;}
+.service-card p{font-size:14.5px;}
+.service-card .tag{
+  margin-top:18px;font-family:var(--font-mono);font-size:11px;color:var(--text-mute);
+  display:flex;gap:8px;flex-wrap:wrap;
+}
+.service-card .tag span{border:1px solid var(--line);padding:3px 8px;border-radius:3px;}
+
+@media(max-width:920px){.services-grid{grid-template-columns:1fr 1fr;}}
+@media(max-width:600px){.services-grid{grid-template-columns:1fr;}}
+
+/* ============================================================
+   SOLUTIONS (deep modules)
+   ============================================================ */
+.solutions{padding:0 0 120px;}
+.solution-module{
+  display:grid;grid-template-columns:.9fr 1.1fr;gap:60px;
+  padding:56px 0;border-top:1px solid var(--line-soft);
+  align-items:start;
+}
+.solution-module:first-of-type{border-top:none;}
+.solution-left h3{font-size:26px;margin-bottom:14px;}
+.solution-left p{margin-bottom:24px;}
+.solution-right{
+  background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:26px 28px;
+}
+.solution-right .row{
+  display:grid;grid-template-columns:120px 1fr;gap:16px;padding:12px 0;
+  border-bottom:1px solid var(--line-soft);font-size:14px;
+}
+.solution-right .row:last-child{border-bottom:none;}
+.solution-right .row b{font-family:var(--font-mono);font-size:11px;color:var(--text-mute);text-transform:uppercase;letter-spacing:.05em;}
+.solution-right .row span{color:var(--text);}
+
+@media(max-width:820px){.solution-module{grid-template-columns:1fr;gap:26px;}}
+
+/* ============================================================
+   CATALOG
+   ============================================================ */
+.catalog{padding:120px 0;background:var(--bg-1);border-top:1px solid var(--line-soft);border-bottom:1px solid var(--line-soft);}
+.catalog-controls{
+  display:flex;gap:14px;margin-bottom:40px;flex-wrap:wrap;align-items:center;justify-content:space-between;
+}
+.filter-tabs{display:flex;gap:8px;flex-wrap:wrap;}
+.filter-tabs button{
+  font-family:var(--font-mono);font-size:12px;letter-spacing:.04em;
+  padding:9px 16px;border:1px solid var(--line);border-radius:20px;color:var(--text-dim);
+  transition:all .2s;
+}
+.filter-tabs button.active,.filter-tabs button:hover{border-color:var(--copper);color:var(--copper);}
+.search-box{
+  position:relative;
+}
+.search-box input{
+  background:var(--panel);border:1px solid var(--line);border-radius:20px;
+  padding:10px 18px 10px 36px;color:var(--text);font-family:var(--font-mono);font-size:12.5px;
+  width:240px;
+}
+.search-box input:focus{outline:none;border-color:var(--cyan);}
+.search-box::before{
+  content:'⌕';position:absolute;left:14px;top:50%;transform:translateY(-50%);
+  color:var(--text-mute);font-size:15px;
+}
+
+.product-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:20px;
+}
+.product-card{
+  background:var(--panel);border:1px solid var(--line);border-radius:6px;
+  padding:26px;display:flex;flex-direction:column;gap:14px;
+  transition:border-color .25s, transform .25s;
+}
+.product-card:hover{border-color:var(--cyan-soft);transform:translateY(-4px);}
+.product-card .pcat{font-family:var(--font-mono);font-size:10.5px;color:var(--cyan);letter-spacing:.08em;text-transform:uppercase;}
+.product-card h4{font-family:var(--font-display);font-size:18px;font-weight:600;}
+.product-card p{font-size:13.5px;flex-grow:1;}
+.product-specs{display:flex;flex-wrap:wrap;gap:6px;font-family:var(--font-mono);font-size:10.5px;color:var(--text-mute);}
+.product-specs span{border:1px solid var(--line);padding:3px 7px;border-radius:3px;}
+.product-card .btn{margin-top:6px;}
+.no-results{grid-column:1/-1;text-align:center;padding:60px 0;color:var(--text-mute);font-family:var(--font-mono);font-size:13px;display:none;}
+
+@media(max-width:920px){.product-grid{grid-template-columns:1fr 1fr;}}
+@media(max-width:600px){.product-grid{grid-template-columns:1fr;} .catalog-controls{flex-direction:column;align-items:stretch;} .search-box input{width:100%;}}
+
+/* ============================================================
+   MAINTENANCE / SLA
+   ============================================================ */
+.sla{padding:120px 0;}
+.sla-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+.sla-card{
+  background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:34px 28px;
+  display:flex;flex-direction:column;
+}
+.sla-card.featured{border-color:var(--copper);position:relative;}
+.sla-card.featured::before{
+  content:'RECOMENDADO';position:absolute;top:-1px;right:-1px;
+  background:var(--copper);color:#0C1214;font-family:var(--font-mono);font-size:10px;
+  padding:5px 10px;letter-spacing:.05em;
+}
+.sla-tier{font-family:var(--font-mono);font-size:12px;color:var(--text-mute);text-transform:uppercase;letter-spacing:.08em;}
+.sla-card h3{margin:10px 0 20px;font-size:23px;}
+.sla-card ul{display:flex;flex-direction:column;gap:12px;margin-bottom:28px;flex-grow:1;}
+.sla-card li{
+  font-size:13.5px;color:var(--text-dim);padding-left:20px;position:relative;
+}
+.sla-card li::before{content:'—';position:absolute;left:0;color:var(--cyan);}
+
+@media(max-width:920px){.sla-grid{grid-template-columns:1fr;}}
+
+/* ============================================================
+   CASE STUDIES
+   ============================================================ */
+.cases{padding:120px 0;background:var(--bg-1);border-top:1px solid var(--line-soft);border-bottom:1px solid var(--line-soft);}
+.case-track{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:20px;
+}
+.case-card{
+  background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:30px;
+  display:flex;flex-direction:column;gap:18px;
+}
+.case-sector{font-family:var(--font-mono);font-size:11px;color:var(--copper);text-transform:uppercase;letter-spacing:.08em;}
+.case-card h4{font-size:19px;}
+.case-block b{display:block;font-family:var(--font-mono);font-size:10.5px;color:var(--text-mute);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;}
+.case-block p{font-size:13.5px;}
+.case-result{
+  display:flex;gap:20px;padding-top:16px;border-top:1px solid var(--line-soft);margin-top:auto;
+}
+.case-result div span{display:block;font-family:var(--font-mono);font-size:22px;color:var(--ok);font-weight:600;}
+.case-result div small{font-size:11px;color:var(--text-mute);}
+
+@media(max-width:920px){.case-track{grid-template-columns:1fr;}}
+
+/* ============================================================
+   PARTNERS
+   ============================================================ */
+.partners{padding:100px 0;}
+.partners-grid{
+  display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--line-soft);border:1px solid var(--line-soft);
+}
+.partner-box{
+  background:var(--bg);padding:30px 10px;display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-display);font-weight:600;color:var(--text-mute);font-size:15px;
+  transition:color .25s;
+}
+.partner-box:hover{color:var(--text);}
+.certs{display:flex;gap:14px;margin-top:40px;flex-wrap:wrap;}
+.cert-badge{
+  border:1px solid var(--line);padding:10px 16px;border-radius:20px;
+  font-family:var(--font-mono);font-size:11.5px;color:var(--text-dim);
+  display:flex;align-items:center;gap:8px;
+}
+.cert-badge i{width:6px;height:6px;background:var(--cyan);border-radius:50%;}
+
+@media(max-width:920px){.partners-grid{grid-template-columns:repeat(3,1fr);}}
+@media(max-width:600px){.partners-grid{grid-template-columns:repeat(2,1fr);}}
+
+/* ============================================================
+   ANALYZER TOOL
+   ============================================================ */
+.analyzer{padding:120px 0;}
+.analyzer-panel{
+  background:var(--panel);border:1px solid var(--line);border-radius:8px;
+  padding:48px;
+}
+.analyzer-top{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:24px;margin-bottom:36px;}
+.analyzer-form{display:flex;gap:12px;margin-top:28px;flex-wrap:wrap;}
+.analyzer-form input{
+  flex:1;min-width:220px;
+  background:var(--bg);border:1px solid var(--line);border-radius:4px;
+  padding:15px 18px;color:var(--text);font-family:var(--font-mono);font-size:14px;
+}
+.analyzer-form input:focus{outline:none;border-color:var(--cyan);}
+
+.scan-stage{margin-top:36px;display:none;}
+.scan-stage.active{display:block;}
+.scan-bars{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:30px;}
+.scan-bar-item{background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:18px;}
+.scan-bar-item b{font-family:var(--font-mono);font-size:10.5px;color:var(--text-mute);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:10px;}
+.scan-track{height:5px;background:var(--line-soft);border-radius:3px;overflow:hidden;}
+.scan-fill{height:100%;width:0%;background:var(--cyan);transition:width 1.4s ease;}
+.scan-pct{font-family:var(--font-mono);font-size:20px;margin-top:8px;color:var(--text);}
+
+.scan-result{display:none;margin-top:10px;}
+.scan-result.active{display:block;}
+.scan-result-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:24px 0 30px;}
+.scan-issue{
+  background:var(--bg);border:1px solid var(--line);border-left:3px solid var(--warn);
+  padding:16px 18px;border-radius:4px;font-size:13.5px;color:var(--text-dim);
+}
+.scan-issue b{color:var(--text);font-family:var(--font-mono);font-size:12px;display:block;margin-bottom:4px;}
+
+@media(max-width:700px){
+  .analyzer-panel{padding:28px;}
+  .scan-bars{grid-template-columns:1fr 1fr;}
+  .scan-result-grid{grid-template-columns:1fr;}
+}
+
+/* ============================================================
+   CONTACT
+   ============================================================ */
+.contact{padding:120px 0;background:var(--bg-1);border-top:1px solid var(--line-soft);}
+.contact-grid{display:grid;grid-template-columns:.8fr 1.2fr;gap:60px;}
+.contact-info h2{margin-bottom:20px;}
+.contact-details{margin-top:40px;display:flex;flex-direction:column;gap:20px;}
+.contact-details div b{display:block;font-family:var(--font-mono);font-size:11px;color:var(--text-mute);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;}
+.contact-details div span{font-size:15px;}
+
+.form-panel{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:38px;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
+.form-group{display:flex;flex-direction:column;gap:8px;}
+.form-group.full{grid-column:1/-1;}
+.form-group label{font-family:var(--font-mono);font-size:11px;color:var(--text-mute);text-transform:uppercase;letter-spacing:.05em;}
+.form-group input,.form-group select,.form-group textarea{
+  background:var(--bg);border:1px solid var(--line);border-radius:4px;
+  padding:13px 14px;color:var(--text);font-family:var(--font-body);font-size:14px;
+}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--cyan);}
+.form-group textarea{resize:vertical;min-height:90px;}
+.form-note{margin-top:16px;font-size:12px;color:var(--text-mute);}
+
+@media(max-width:820px){.contact-grid{grid-template-columns:1fr;} .form-row{grid-template-columns:1fr;}}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+footer{padding:60px 0 30px;border-top:1px solid var(--line-soft);}
+.footer-grid{display:flex;justify-content:space-between;flex-wrap:wrap;gap:30px;padding-bottom:36px;}
+.footer-links{display:flex;gap:40px;flex-wrap:wrap;}
+.footer-col b{display:block;font-family:var(--font-mono);font-size:11px;color:var(--text-mute);text-transform:uppercase;letter-spacing:.05em;margin-bottom:14px;}
+.footer-col a{display:block;font-size:13.5px;color:var(--text-dim);padding:5px 0;}
+.footer-col a:hover{color:var(--text);}
+.footer-bottom{
+  display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;
+  padding-top:24px;border-top:1px solid var(--line-soft);
+  font-family:var(--font-mono);font-size:11.5px;color:var(--text-mute);
+}
+.footer-bottom a{color:var(--text-mute);opacity:.75;transition:opacity .2s;}
+.footer-bottom a:hover{opacity:1;}
+
+/* ============================================================
+   WHATSAPP FLOAT
+   ============================================================ */
+.wa-float{
+  position:fixed;bottom:24px;right:24px;z-index:90;
+  width:56px;height:56px;border-radius:50%;
+  background:#25D366;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 6px 24px rgba(37,211,102,.35);
+  transition:transform .25s;
+}
+.wa-float:hover{transform:scale(1.08);}
+.wa-float svg{width:28px;height:28px;}
+
+/* reveal utility */
+.reveal{opacity:0;transform:translateY(24px);}
+
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:.001ms !important;transition-duration:.001ms !important;}
+}
+</style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+
+<!-- ============ HEADER ============ -->
+<header>
+  <div class="wrap nav">
+    <a href="#top" class="logo"><span class="dot"></span>NEXUS<span>IT / ANGOLA</span></a>
+    <nav class="nav-links" id="navLinks">
+      <a href="#solucoes">Soluções</a>
+      <a href="#catalogo">Catálogo</a>
+      <a href="#manutencao">Manutenção</a>
+      <a href="#casos">Casos de Estudo</a>
+      <a href="#analyzer">Diagnóstico</a>
+      <a href="#contacto">Contacto</a>
+    </nav>
+    <div class="nav-cta">
+      <a href="#contacto" class="btn btn-ghost">Solicitar Proposta</a>
+      <button class="nav-toggle" id="navToggle" aria-label="Menu"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</header>
+
+<!-- ============ HERO ============ -->
+<section class="hero" id="top">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="hero-status"><span class="pulse"></span> INFRAESTRUTURA OPERACIONAL — 99.9% UPTIME</div>
+      <h1>Tecnologia que mantém <em>empresas</em> em funcionamento.</h1>
+      <p class="lead">Infraestrutura IT, redes e cibersegurança para organizações que não podem parar. Equipamentos, contratos de manutenção e suporte técnico de nível empresarial em Angola.</p>
+      <div class="hero-cta">
+        <a href="#contacto" class="btn btn-primary">Solicitar Proposta Técnica →</a>
+        <a href="https://wa.me/244900000000" target="_blank" class="btn btn-ghost">Falar no WhatsApp</a>
+      </div>
+      <div class="hero-meta">
+        <div><span>140+</span><small>Projectos Implementados</small></div>
+        <div><span>24/7</span><small>Monitorização Remota</small></div>
+        <div><span>&lt;4h</span><small>Resposta SLA Prioritário</small></div>
+      </div>
+    </div>
+
+    <div class="noc-panel reveal" id="nocPanel">
+      <div class="noc-head">
+        <span>NOC — Painel de Infraestrutura</span>
+        <span class="live"><i></i>AO VIVO</span>
+      </div>
+      <div class="noc-body">
+        <svg id="topology" viewBox="0 0 480 300" xmlns="http://www.w3.org/2000/svg">
+          <!-- connection lines -->
+          <g stroke="#223035" stroke-width="1.4" fill="none" id="topoLines">
+            <line x1="240" y1="150" x2="90" y2="60"/>
+            <line x1="240" y1="150" x2="390" y2="60"/>
+            <line x1="240" y1="150" x2="90" y2="240"/>
+            <line x1="240" y1="150" x2="390" y2="240"/>
+            <line x1="90" y1="60" x2="90" y2="240"/>
+            <line x1="390" y1="60" x2="390" y2="240"/>
+          </g>
+          <g id="topoPulse" stroke="#4FB6C9" stroke-width="1.6" fill="none" opacity="0">
+            <line x1="240" y1="150" x2="90" y2="60"/>
+            <line x1="240" y1="150" x2="390" y2="240"/>
+          </g>
+          <!-- nodes -->
+          <g font-family="IBM Plex Mono" font-size="10" fill="#9FAFB3">
+            <circle cx="240" cy="150" r="9" fill="#D9893F"/>
+            <text x="240" y="180" text-anchor="middle" fill="#EAEEEE">CORE</text>
+
+            <circle cx="90" cy="60" r="6" fill="#4FB6C9"/>
+            <text x="90" y="45" text-anchor="middle">Servidores</text>
+
+            <circle cx="390" cy="60" r="6" fill="#4FB6C9"/>
+            <text x="390" y="45" text-anchor="middle">Rede</text>
+
+            <circle cx="90" cy="240" r="6" fill="#6FBF8B"/>
+            <text x="90" y="262" text-anchor="middle">Segurança</text>
+
+            <circle cx="390" cy="240" r="6" fill="#6FBF8B"/>
+            <text x="390" y="262" text-anchor="middle">Suporte</text>
+          </g>
+        </svg>
+      </div>
+      <div class="noc-log" id="nocLog"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TRUST STRIP ============ -->
+<div class="trust-strip">
+  <div class="wrap">
+    <p>PARCEIRO DE INFRAESTRUTURA PARA ORGANIZAÇÕES EM:</p>
+    <div class="trust-brands">
+      <span>Banca &amp; Finanças</span>
+      <span>Indústria</span>
+      <span>Retalho</span>
+      <span>Sector Público</span>
+      <span>Logística</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============ CORE SERVICES ============ -->
+<section class="services" id="servicos">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="eyebrow">Áreas de Actuação</div>
+      <h2>Um único parceiro para toda a sua stack de infraestrutura.</h2>
+      <p>Da sala de servidores ao posto de trabalho — desenhamos, instalamos e mantemos o ambiente tecnológico que suporta a sua operação diária.</p>
+    </div>
+    <div class="services-grid">
+      <div class="service-card reveal">
+        <div class="idx">EQ / 01</div>
+        <h3>Equipamentos IT</h3>
+        <p>Fornecimento de desktops, laptops, servidores e periféricos com especificação técnica orientada ao caso de uso.</p>
+        <div class="tag"><span>Dell</span><span>HP</span><span>Lenovo</span></div>
+      </div>
+      <div class="service-card reveal">
+        <div class="idx">NW / 02</div>
+        <h3>Redes e Infraestrutura</h3>
+        <p>Desenho e implementação de redes cabladas e sem fios, cablagem estruturada e segmentação para ambientes exigentes.</p>
+        <div class="tag"><span>LAN/WAN</span><span>Wi-Fi 6</span><span>VLAN</span></div>
+      </div>
+      <div class="service-card reveal">
+        <div class="idx">SEC / 03</div>
+        <h3>Cibersegurança</h3>
+        <p>Firewalls, políticas de acesso, backups geridos e monitorização contínua contra ameaças internas e externas.</p>
+        <div class="tag"><span>Firewall</span><span>Backup</span><span>EDR</span></div>
+      </div>
+      <div class="service-card reveal">
+        <div class="idx">INS / 04</div>
+        <h3>Instalação e Configuração</h3>
+        <p>Implementação chave-na-mão de sistemas, servidores e postos de trabalho com documentação técnica entregue.</p>
+        <div class="tag"><span>On-site</span><span>Deploy</span><span>Docs</span></div>
+      </div>
+      <div class="service-card reveal">
+        <div class="idx">SUP / 05</div>
+        <h3>Suporte Técnico Empresarial</h3>
+        <p>Equipa dedicada com resposta remota e presencial, dentro de níveis de serviço claramente definidos.</p>
+        <div class="tag"><span>Remoto</span><span>On-site</span><span>SLA</span></div>
+      </div>
+      <div class="service-card reveal">
+        <div class="idx">CTR / 06</div>
+        <h3>Contratos de Manutenção</h3>
+        <p>Pacotes mensais de manutenção preventiva e correctiva, adaptados à criticidade da sua operação.</p>
+        <div class="tag"><span>Preventiva</span><span>Correctiva</span><span>Mensal</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SOLUTIONS (deep) ============ -->
+<section class="solutions" id="solucoes">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="eyebrow">Módulos de Solução</div>
+      <h2>Cada solução, tratada como um módulo técnico.</h2>
+    </div>
+
+    <div class="solution-module reveal">
+      <div class="solution-left">
+        <h3>Infraestrutura de Redes</h3>
+        <p>Uma rede mal desenhada é o ponto de falha mais comum em ambientes empresariais. Desenhamos topologias segmentadas, redundantes e escaláveis, adaptadas ao crescimento previsto da organização.</p>
+        <a href="#contacto" class="btn btn-ghost">Pedir Análise de Rede →</a>
+      </div>
+      <div class="solution-right">
+        <div class="row"><b>Valor</b><span>Reduz falhas de conectividade e pontos únicos de falha.</span></div>
+        <div class="row"><b>Técnico</b><span>Switches geridos, VLANs, QoS, redundância WAN.</span></div>
+        <div class="row"><b>Casos de Uso</b><span>Escritórios multi-piso, armazéns, filiais interligadas.</span></div>
+      </div>
+    </div>
+
+    <div class="solution-module reveal">
+      <div class="solution-left">
+        <h3>Cibersegurança Empresarial</h3>
+        <p>Protegemos o perímetro e o interior da rede com políticas de acesso, cópias de segurança geridas e monitorização activa — não apenas um antivírus instalado uma vez.</p>
+        <a href="#contacto" class="btn btn-ghost">Pedir Avaliação de Segurança →</a>
+      </div>
+      <div class="solution-right">
+        <div class="row"><b>Valor</b><span>Reduz risco de paragem operacional e perda de dados.</span></div>
+        <div class="row"><b>Técnico</b><span>Firewall perimetral, backup 3-2-1, EDR gerido.</span></div>
+        <div class="row"><b>Casos de Uso</b><span>Banca, sector público, operações com dados sensíveis.</span></div>
+      </div>
+    </div>
+
+    <div class="solution-module reveal">
+      <div class="solution-left">
+        <h3>Servidores &amp; Virtualização</h3>
+        <p>Consolidamos cargas de trabalho em servidores dimensionados correctamente, com planos de contingência e recuperação testados — não apenas instalados.</p>
+        <a href="#contacto" class="btn btn-ghost">Pedir Dimensionamento →</a>
+      </div>
+      <div class="solution-right">
+        <div class="row"><b>Valor</b><span>Reduz custo total de propriedade e tempo de recuperação.</span></div>
+        <div class="row"><b>Técnico</b><span>Virtualização, RAID, planos de disaster recovery.</span></div>
+        <div class="row"><b>Casos de Uso</b><span>ERP interno, ficheiros partilhados, aplicações críticas.</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CATALOG ============ -->
+<section class="catalog" id="catalogo">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="eyebrow">Catálogo B2B</div>
+      <h2>Equipamento especificado, não vendido às cegas.</h2>
+      <p>Cada item inclui especificação técnica e caso de uso recomendado. Solicite uma cotação — sem checkout, com acompanhamento técnico.</p>
+    </div>
+
+    <div class="catalog-controls">
+      <div class="filter-tabs" id="filterTabs">
+        <button class="active" data-filter="all">Todos</button>
+        <button data-filter="desktop">Desktops</button>
+        <button data-filter="laptop">Laptops</button>
+        <button data-filter="server">Servidores</button>
+        <button data-filter="network">Routers &amp; Switches</button>
+        <button data-filter="accessory">Acessórios</button>
+      </div>
+      <div class="search-box">
+        <input type="text" id="productSearch" placeholder="Pesquisar equipamento...">
+      </div>
+    </div>
+
+    <div class="product-grid" id="productGrid">
+      <!-- populated + also present statically for no-JS fallback -->
+    </div>
+    <div class="no-results" id="noResults">Nenhum equipamento corresponde à sua pesquisa.</div>
+  </div>
+</section>
+
+<!-- ============ MAINTENANCE / SLA ============ -->
+<section class="sla" id="manutencao">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="eyebrow">Contratos de Manutenção</div>
+      <h2>Acordos de nível de serviço, não promessas verbais.</h2>
+      <p>Escolha o nível de cobertura de acordo com a criticidade da sua operação.</p>
+    </div>
+    <div class="sla-grid">
+      <div class="sla-card reveal">
+        <span class="sla-tier">Essencial</span>
+        <h3>Suporte Remoto</h3>
+        <ul>
+          <li>Resposta remota em até 24h úteis</li>
+          <li>Monitorização básica de servidores</li>
+          <li>2 visitas técnicas por trimestre</li>
+          <li>Suporte por telefone e email</li>
+        </ul>
+        <a href="#contacto" class="btn btn-ghost btn-block">Solicitar Este Plano</a>
+      </div>
+      <div class="sla-card featured reveal">
+        <span class="sla-tier">Empresarial</span>
+        <h3>Suporte Prioritário</h3>
+        <ul>
+          <li>Resposta remota em até 4h úteis</li>
+          <li>Monitorização 24/7 de infraestrutura crítica</li>
+          <li>Visitas técnicas mensais incluídas</li>
+          <li>Backup gerido e verificado</li>
+          <li>Linha directa WhatsApp para incidentes</li>
+        </ul>
+        <a href="#contacto" class="btn btn-primary btn-block">Solicitar Este Plano</a>
+      </div>
+      <div class="sla-card reveal">
+        <span class="sla-tier">Crítico</span>
+        <h3>Continuidade Operacional</h3>
+        <ul>
+          <li>Resposta remota em até 1h — 24/7/365</li>
+          <li>Engenheiro dedicado alocado</li>
+          <li>Plano de recuperação de desastres testado</li>
+          <li>Visitas técnicas quinzenais</li>
+          <li>Relatórios executivos mensais</li>
+        </ul>
+        <a href="#contacto" class="btn btn-ghost btn-block">Solicitar Este Plano</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CASE STUDIES ============ -->
+<section class="cases" id="casos">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="eyebrow">Casos de Estudo</div>
+      <h2>Problemas reais, resolvidos com documentação técnica.</h2>
+    </div>
+    <div class="case-track">
+      <div class="case-card reveal">
+        <span class="case-sector">Sector Bancário</span>
+        <h4>Redundância de rede em agência multi-piso</h4>
+        <div class="case-block"><b>Problema</b><p>Quedas de rede frequentes interrompiam operações de caixa em horário de pico.</p></div>
+        <div class="case-block"><b>Solução</b><p>Segmentação em VLANs com dupla ligação WAN e failover automático.</p></div>
+        <div class="case-block"><b>Tecnologias</b><p>Switches geridos, firewall perimetral, monitorização SNMP.</p></div>
+        <div class="case-result">
+          <div><span>99.9%</span><small>Uptime alcançado</small></div>
+          <div><span>-85%</span><small>Incidentes/mês</small></div>
+        </div>
+      </div>
+      <div class="case-card reveal">
+        <span class="case-sector">Indústria</span>
+        <h4>Modernização de sala de servidores</h4>
+        <div class="case-block"><b>Problema</b><p>Servidores obsoletos sem plano de recuperação em caso de falha.</p></div>
+        <div class="case-block"><b>Solução</b><p>Virtualização de cargas críticas com backup 3-2-1 automatizado.</p></div>
+        <div class="case-block"><b>Tecnologias</b><p>Hypervisor, storage RAID, replicação para site secundário.</p></div>
+        <div class="case-result">
+          <div><span>4h</span><small>RTO garantido</small></div>
+          <div><span>0</span><small>Perdas de dados</small></div>
+        </div>
+      </div>
+      <div class="case-card reveal">
+        <span class="case-sector">Sector Público</span>
+        <h4>Reforço de cibersegurança institucional</h4>
+        <div class="case-block"><b>Problema</b><p>Ausência de políticas de acesso e exposição a ameaças externas.</p></div>
+        <div class="case-block"><b>Solução</b><p>Implementação de firewall gerido, EDR e política de acessos por função.</p></div>
+        <div class="case-block"><b>Tecnologias</b><p>Firewall de nova geração, EDR, autenticação multifactor.</p></div>
+        <div class="case-result">
+          <div><span>0</span><small>Incidentes desde deploy</small></div>
+          <div><span>100%</span><small>Postos cobertos</small></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PARTNERS ============ -->
+<section class="partners">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="eyebrow">Parceiros &amp; Certificações</div>
+      <h2>Trabalhamos com o padrão que a infraestrutura exige.</h2>
+    </div>
+    <div class="partners-grid">
+      <div class="partner-box">CISCO</div>
+      <div class="partner-box">DELL</div>
+      <div class="partner-box">HP</div>
+      <div class="partner-box">MICROSOFT</div>
+      <div class="partner-box">FORTINET</div>
+    </div>
+    <div class="certs">
+      <div class="cert-badge"><i></i>Técnicos Certificados em Redes</div>
+      <div class="cert-badge"><i></i>Parceiro de Implementação Autorizado</div>
+      <div class="cert-badge"><i></i>Boas Práticas de Segurança de Dados</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ANALYZER ============ -->
+<section class="analyzer" id="analyzer">
+  <div class="wrap">
+    <div class="analyzer-panel reveal">
+      <div class="analyzer-top">
+        <div>
+          <div class="eyebrow">Ferramenta Gratuita</div>
+          <h2>IT Infrastructure Analyzer</h2>
+          <p style="max-width:520px;margin-top:12px;">Introduza o endereço do seu website e obtenha uma leitura inicial de desempenho, segurança e experiência — em segundos.</p>
+        </div>
+      </div>
+      <div class="analyzer-form">
+        <input type="text" id="analyzeInput" placeholder="www.suaempresa.co.ao">
+        <button class="btn btn-primary" id="analyzeBtn">Analisar Agora</button>
+      </div>
+
+      <div class="scan-stage" id="scanStage">
+        <div class="scan-bars">
+          <div class="scan-bar-item">
+            <b>Desempenho</b>
+            <div class="scan-pct" id="pctPerf">0%</div>
+            <div class="scan-track"><div class="scan-fill" id="fillPerf"></div></div>
+          </div>
+          <div class="scan-bar-item">
+            <b>Infraestrutura</b>
+            <div class="scan-pct" id="pctInfra">0%</div>
+            <div class="scan-track"><div class="scan-fill" id="fillInfra"></div></div>
+          </div>
+          <div class="scan-bar-item">
+            <b>Segurança</b>
+            <div class="scan-pct" id="pctSec">0%</div>
+            <div class="scan-track"><div class="scan-fill" id="fillSec"></div></div>
+          </div>
+          <div class="scan-bar-item">
+            <b>Experiência (UX)</b>
+            <div class="scan-pct" id="pctUx">0%</div>
+            <div class="scan-track"><div class="scan-fill" id="fillUx"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="scan-result" id="scanResult">
+        <h3 style="margin-bottom:6px;">Resumo do Diagnóstico</h3>
+        <p style="font-size:13.5px;">Identificámos pontos que, tipicamente, custam desempenho, segurança ou conversão a organizações com o seu perfil.</p>
+        <div class="scan-result-grid">
+          <div class="scan-issue"><b>Desempenho</b>Tempos de carregamento podem estar a afastar visitantes em ligações mais lentas, comuns em Angola.</div>
+          <div class="scan-issue"><b>Segurança</b>Configurações de protecção de dados podem não seguir as práticas actuais recomendadas.</div>
+          <div class="scan-issue"><b>Infraestrutura</b>Ausência aparente de redundância pode gerar indisponibilidade em picos de tráfego.</div>
+          <div class="scan-issue"><b>Experiência</b>Elementos de navegação podem não estar optimizados para utilizadores móveis.</div>
+        </div>
+        <a href="#contacto" class="btn btn-primary">Agendar Diagnóstico Técnico Completo →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CONTACT ============ -->
+<section class="contact" id="contacto">
+  <div class="wrap contact-grid">
+    <div class="contact-info reveal">
+      <div class="eyebrow">Contacto</div>
+      <h2>Vamos falar sobre a sua infraestrutura.</h2>
+      <p>Preencha o formulário com o contexto da sua organização e receba uma proposta técnica personalizada. Para urgências, use o WhatsApp.</p>
+      <div class="contact-details">
+        <div><b>WhatsApp Directo</b><span>+244 900 000 000</span></div>
+        <div><b>Email Comercial</b><span>comercial@nexusit.co.ao</span></div>
+        <div><b>Localização</b><span>Luanda, Angola — Atendimento Nacional</span></div>
+        <div><b>Horário</b><span>Seg–Sex, 08h00–18h00 · Emergências 24/7</span></div>
+      </div>
+    </div>
+
+    <form class="form-panel reveal" id="contactForm">
+      <div class="form-row">
+        <div class="form-group"><label>Nome da Empresa</label><input type="text" required placeholder="Ex: Grupo Kianda Lda"></div>
+        <div class="form-group"><label>Sector</label>
+          <select required>
+            <option value="">Seleccionar</option>
+            <option>Banca &amp; Finanças</option>
+            <option>Indústria</option>
+            <option>Retalho</option>
+            <option>Sector Público</option>
+            <option>Logística</option>
+            <option>Outro</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Nome de Contacto</label><input type="text" required placeholder="Nome completo"></div>
+        <div class="form-group"><label>WhatsApp / Telefone</label><input type="tel" required placeholder="+244 9__ ___ ___"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Nível de Urgência</label>
+          <select>
+            <option>Planeamento — sem urgência</option>
+            <option>Nos próximos 30 dias</option>
+            <option>Urgente — operação afectada</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Faixa de Orçamento (Kz)</label>
+          <select>
+            <option>A definir com equipa técnica</option>
+            <option>Até 2.000.000 Kz</option>
+            <option>2.000.000 – 10.000.000 Kz</option>
+            <option>Acima de 10.000.000 Kz</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group full"><label>Descrição do Problema / Necessidade</label>
+          <textarea placeholder="Descreva brevemente o desafio técnico ou a necessidade da sua organização..."></textarea>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">Receber Proposta Técnica</button>
+      <p class="form-note">Resposta em até 1 dia útil. Dados tratados com confidencialidade.</p>
+    </form>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="wrap">
+    <div class="footer-grid">
+      <a href="#top" class="logo"><span class="dot"></span>NEXUS<span>IT / ANGOLA</span></a>
+      <div class="footer-links">
+        <div class="footer-col">
+          <b>Serviços</b>
+          <a href="#solucoes">Soluções</a>
+          <a href="#servicos">Áreas de Actuação</a>
+        </div>
+        <div class="footer-col">
+          <b>Catálogo</b>
+          <a href="#catalogo">Equipamentos</a>
+        </div>
+        <div class="footer-col">
+          <b>Manutenção</b>
+          <a href="#manutencao">Contratos SLA</a>
+        </div>
+        <div class="footer-col">
+          <b>Contacto</b>
+          <a href="#contacto">Solicitar Proposta</a>
+          <a href="https://wa.me/244900000000" target="_blank">WhatsApp</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 NEXUS IT — Angola. Todos os direitos reservados.</span>
+      <span>Made by WRAO · <a href="https://instagram.com/websitesrapidos.ao" target="_blank">@websitesrapidos.ao</a></span>
+    </div>
+  </div>
+</footer>
+
+<!-- ============ WHATSAPP FLOAT ============ -->
+<a href="https://wa.me/244900000000" target="_blank" class="wa-float" aria-label="Falar no WhatsApp">
+  <svg viewBox="0 0 24 24" fill="white"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.29-1.39a9.9 9.9 0 0 0 4.75 1.21h.01c5.46 0 9.9-4.45 9.9-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2zm5.8 14.13c-.24.68-1.4 1.3-1.93 1.38-.5.08-1.11.11-1.79-.11-.41-.13-.94-.3-1.62-.6-2.85-1.23-4.71-4.1-4.85-4.29-.14-.19-1.16-1.54-1.16-2.94s.73-2.09.99-2.37c.26-.29.56-.36.75-.36l.53.01c.17.01.4-.06.63.48.24.55.8 1.9.87 2.04.07.14.11.3.02.49-.09.19-.14.3-.27.46-.14.16-.29.36-.41.48-.14.14-.28.29-.12.57.16.28.71 1.17 1.53 1.9 1.05.93 1.93 1.22 2.21 1.36.28.14.44.12.61-.07.16-.19.68-.79.86-1.06.18-.28.36-.23.6-.14.24.09 1.55.73 1.82.86.27.14.45.2.51.32.07.11.07.66-.17 1.34z"/></svg>
+</a>
+
+<script>
+/* ============================================================
+   NAV TOGGLE
+   ============================================================ */
+const navToggle=document.getElementById('navToggle');
+const navLinks=document.getElementById('navLinks');
+navToggle.addEventListener('click',()=>navLinks.classList.toggle('open'));
+navLinks.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>navLinks.classList.remove('open')));
+
+/* ============================================================
+   LENIS SMOOTH SCROLL
+   ============================================================ */
+let lenis;
+if(window.Lenis && !window.matchMedia('(max-width: 760px)').matches){
+  lenis=new Lenis({ duration:1.1, smoothWheel:true });
+  function raf(time){ lenis.raf(time); requestAnimationFrame(raf); }
+  requestAnimationFrame(raf);
+  lenis.on('scroll', ()=>{ if(window.ScrollTrigger) ScrollTrigger.update(); });
+}
+
+/* ============================================================
+   GSAP SCROLLTRIGGER REVEALS
+   ============================================================ */
+if(window.gsap){
+  gsap.registerPlugin(ScrollTrigger);
+  gsap.set('.hero-status, .hero h1, .hero p.lead, .hero-cta, .hero-meta', {opacity:0, y:22});
+  gsap.timeline({defaults:{ease:'power3.out'}})
+    .to('.hero-status',{opacity:1,y:0,duration:.6})
+    .to('.hero h1',{opacity:1,y:0,duration:.8},'-=.35')
+    .to('.hero p.lead',{opacity:1,y:0,duration:.7},'-=.5')
+    .to('.hero-cta',{opacity:1,y:0,duration:.6},'-=.45')
+    .to('.hero-meta',{opacity:1,y:0,duration:.6},'-=.4')
+    .to('#nocPanel',{opacity:1,y:0,duration:.9},'-=.9');
+
+  document.querySelectorAll('.reveal').forEach(el=>{
+    if(el.id==='nocPanel') return;
+    gsap.fromTo(el,{opacity:0,y:26},{
+      opacity:1,y:0,duration:.8,ease:'power3.out',
+      scrollTrigger:{trigger:el,start:'top 88%'}
+    });
+  });
+
+  gsap.utils.toArray('.services-grid .service-card').forEach((card,i)=>{
+    gsap.fromTo(card,{opacity:0,y:20},{
+      opacity:1,y:0,duration:.6,delay:(i%3)*.08,ease:'power2.out',
+      scrollTrigger:{trigger:card,start:'top 92%'}
+    });
+  });
+}else{
+  document.querySelectorAll('.reveal').forEach(el=>{el.style.opacity=1;el.style.transform='none';});
+}
+
+/* ============================================================
+   NOC TOPOLOGY — pulse animation on lines + rotating log
+   ============================================================ */
+(function(){
+  const pulse=document.getElementById('topoPulse');
+  if(pulse && window.gsap){
+    gsap.to(pulse,{opacity:1,duration:1,repeat:-1,yoyo:true,ease:'sine.inOut'});
+  }
+  const logs=[
+    ['ok','[OK] Servidor-01 · resposta 12ms'],
+    ['ok','[OK] Firewall perimetral · activo'],
+    ['warn','[AVISO] Switch-04 · latência elevada'],
+    ['ok','[OK] Backup nocturno · concluído'],
+    ['ok','[OK] Rede WAN secundária · standby'],
+    ['ok','[OK] Suporte · 0 tickets críticos'],
+    ['warn','[AVISO] Certificado SSL expira em 21 dias'],
+    ['ok','[OK] Monitorização · todos os nós activos'],
+  ];
+  const el=document.getElementById('nocLog');
+  let i=0;
+  function pushLog(){
+    const [cls,text]=logs[i%logs.length];
+    const div=document.createElement('div');
+    div.className=cls;
+    div.textContent=text+'  ·  '+new Date().toLocaleTimeString('pt-PT',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    el.prepend(div);
+    while(el.children.length>10) el.removeChild(el.lastChild);
+    i++;
+  }
+  for(let k=0;k<5;k++) pushLog();
+  setInterval(pushLog,2600);
+})();
+
+/* ============================================================
+   PRODUCT CATALOG DATA + RENDER + FILTER/SEARCH
+   ============================================================ */
+const PRODUCTS=[
+  {cat:'desktop',name:'Desktop Empresarial Pro',desc:'Estação de trabalho para escritório com desempenho consistente em multitarefa.',specs:['Intel i5','16GB RAM','512GB SSD']},
+  {cat:'desktop',name:'Desktop Compacto Office',desc:'Formato reduzido para postos administrativos com espaço limitado.',specs:['Intel i3','8GB RAM','256GB SSD']},
+  {cat:'laptop',name:'Laptop Corporativo 14"',desc:'Mobilidade e autonomia para equipas comerciais e de gestão.',specs:['Intel i7','16GB RAM','1TB SSD']},
+  {cat:'laptop',name:'Laptop Robusto Field',desc:'Construção reforçada para uso em campo e ambientes industriais.',specs:['Intel i5','16GB RAM','IP52']},
+  {cat:'server',name:'Servidor Torre SMB',desc:'Servidor de entrada para pequenas e médias operações com virtualização.',specs:['Xeon E-2300','32GB RAM','RAID 1']},
+  {cat:'server',name:'Servidor Rack Empresarial',desc:'Alta densidade para datacenters internos e cargas críticas.',specs:['Xeon Silver','64GB RAM','RAID 5']},
+  {cat:'network',name:'Router Empresarial Gigabit',desc:'Gestão de tráfego e QoS para redes multi-departamento.',specs:['Gigabit','VPN','QoS']},
+  {cat:'network',name:'Switch Gerido 24 Portas',desc:'Segmentação VLAN para infraestruturas de rede estruturadas.',specs:['24 Portas','VLAN','PoE+']},
+  {cat:'accessory',name:'UPS Empresarial 2000VA',desc:'Protecção de energia para servidores e equipamento crítico.',specs:['2000VA','AVR','LCD']},
+  {cat:'accessory',name:'Rack de Parede 12U',desc:'Organização estruturada para salas técnicas e de rede.',specs:['12U','Ventilado','Bloqueável']},
+];
+
+const grid=document.getElementById('productGrid');
+const noResults=document.getElementById('noResults');
+
+function renderProducts(list){
+  grid.innerHTML='';
+  if(list.length===0){ noResults.style.display='block'; return; }
+  noResults.style.display='none';
+  list.forEach(p=>{
+    const card=document.createElement('div');
+    card.className='product-card';
+    card.innerHTML=`
+      <span class="pcat">${labelFor(p.cat)}</span>
+      <h4>${p.name}</h4>
+      <p>${p.desc}</p>
+      <div class="product-specs">${p.specs.map(s=>`<span>${s}</span>`).join('')}</div>
+      <a href="#contacto" class="btn btn-ghost btn-block">Solicitar Cotação</a>
+    `;
+    grid.appendChild(card);
+  });
+}
+function labelFor(cat){
+  return {desktop:'Desktop',laptop:'Laptop',server:'Servidor',network:'Rede',accessory:'Acessório'}[cat]||cat;
+}
+
+let currentFilter='all';
+let currentSearch='';
+function applyFilters(){
+  let list=PRODUCTS;
+  if(currentFilter!=='all') list=list.filter(p=>p.cat===currentFilter);
+  if(currentSearch.trim()!==''){
+    const q=currentSearch.toLowerCase();
+    list=list.filter(p=>p.name.toLowerCase().includes(q)||p.desc.toLowerCase().includes(q));
+  }
+  renderProducts(list);
+}
+document.getElementById('filterTabs').addEventListener('click',e=>{
+  const btn=e.target.closest('button');
+  if(!btn) return;
+  document.querySelectorAll('#filterTabs button').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  currentFilter=btn.dataset.filter;
+  applyFilters();
+});
+document.getElementById('productSearch').addEventListener('input',e=>{
+  currentSearch=e.target.value;
+  applyFilters();
+});
+renderProducts(PRODUCTS);
+
+/* ============================================================
+   IT INFRASTRUCTURE ANALYZER (simulated diagnostic)
+   ============================================================ */
+const analyzeBtn=document.getElementById('analyzeBtn');
+const analyzeInput=document.getElementById('analyzeInput');
+const scanStage=document.getElementById('scanStage');
+const scanResult=document.getElementById('scanResult');
+
+const bars=[
+  {fill:'fillPerf',pct:'pctPerf',target:62},
+  {fill:'fillInfra',pct:'pctInfra',target:54},
+  {fill:'fillSec',pct:'pctSec',target:48},
+  {fill:'fillUx',pct:'pctUx',target:71},
+];
+
+analyzeBtn.addEventListener('click',()=>{
+  if(!analyzeInput.value.trim()){
+    analyzeInput.focus();
+    analyzeInput.style.borderColor='var(--warn)';
+    setTimeout(()=>analyzeInput.style.borderColor='var(--line)',900);
+    return;
+  }
+  scanStage.classList.add('active');
+  scanResult.classList.remove('active');
+  analyzeBtn.textContent='A analisar...';
+  analyzeBtn.disabled=true;
+
+  bars.forEach(b=>{
+    document.getElementById(b.fill).style.width='0%';
+    document.getElementById(b.pct).textContent='0%';
+  });
+
+  bars.forEach((b,idx)=>{
+    setTimeout(()=>{
+      const fillEl=document.getElementById(b.fill);
+      const pctEl=document.getElementById(b.pct);
+      fillEl.style.width=b.target+'%';
+      let cur=0;
+      const step=setInterval(()=>{
+        cur+=2;
+        if(cur>=b.target){cur=b.target;clearInterval(step);}
+        pctEl.textContent=cur+'%';
+      },22);
+    }, idx*280);
+  });
+
+  setTimeout(()=>{
+    scanResult.classList.add('active');
+    scanResult.scrollIntoView({behavior:'smooth',block:'center'});
+    analyzeBtn.textContent='Analisar Agora';
+    analyzeBtn.disabled=false;
+  }, 2400);
+});
+
+/* ============================================================
+   CONTACT FORM (front-end confirmation only)
+   ============================================================ */
+document.getElementById('contactForm').addEventListener('submit',function(e){
+  e.preventDefault();
+  const btn=this.querySelector('button[type="submit"]');
+  const original=btn.textContent;
+  btn.textContent='Pedido Enviado ✓';
+  btn.style.background='var(--ok)';
+  setTimeout(()=>{
+    btn.textContent=original;
+    btn.style.background='';
+    this.reset();
+  },2600);
+});
+</script>
+</body>
+</html>
